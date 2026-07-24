@@ -1,0 +1,19 @@
+# Build output
+build/
+*.o
+*.d
+phase
+
+# Ninja state
+.ninja_log
+.ninja_deps
+
+# clangd
+.cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
