@@ -1,10 +1,10 @@
-#include "container.hpp"
+#include "widgets/container/container.hpp"
 #include <algorithm>
 #include <cstdio>
 
 Container::Container()
-    : style{ContainerAxis::Row, 0, 0, 0, 0,
-            {Unit::Fit, {0}}, {Unit::Fit, {0}}, 0} {}
+    : style{ContainerAxis::Row, 0, 0, 0, 0, {Unit::Fit, {0}},
+            {Unit::Fit, {0}},   0} {}
 
 float Container::width_additions() {
   if (along_axis(ContainerAxis::Row) && children.size() > 0) {
@@ -96,7 +96,10 @@ void Container::measure() {
     adjust_fit(child);
   }
 
-  std::printf("%f\n", layout.measured_w);
+  if (leaf_node()) {
+    layout.measured_w += style.w.value.px;
+    layout.measured_h += style.h.value.px;
+  }
 }
 
 void Container::arrange() {
@@ -110,9 +113,9 @@ void Container::arrange() {
 
     child.arrange();
 
-    axis_offset +=
-        calc_offset(child); // TODO: cross offset (for cross-axis
-                            // alignment) would be added here too
-    std::printf("x=%f y=%f w=%f h=%f\n", child.layout.x, child.layout.y, child.layout.w, child.layout.h);
+    axis_offset += calc_offset(child); // TODO: cross offset (for cross-axis
+                                       // alignment) would be added here too
+    std::printf("x=%f y=%f w=%f h=%f\n", child.layout.x, child.layout.y,
+                child.layout.w, child.layout.h);
   }
 }

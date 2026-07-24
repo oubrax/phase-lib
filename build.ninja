@@ -16,8 +16,9 @@ rule link
 
 build $builddir/main.o: cxx src/main.cpp
 build $builddir/widget.o: cxx src/widget.cpp
-build $builddir/container.o: cxx src/container.cpp
+build $builddir/container.o: cxx src/widgets/container/container.cpp
+build $builddir/prop.o: cxx src/widgets/container/prop.cpp
 
-build $builddir/phase: link $builddir/main.o $builddir/widget.o $builddir/container.o
+build $builddir/phase: link $builddir/main.o $builddir/widget.o $builddir/container.o $builddir/prop.o
 
 default $builddir/phase

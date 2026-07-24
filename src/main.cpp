@@ -1,15 +1,22 @@
-#include "container.hpp"
-#include "widget.hpp"
-#include <memory>
-
+#include "widgets/container/container.hpp"
+#include "widgets/container/prop.hpp"
 
 int main() {
-  Container c;
-  c.w(px(50.)).h(px(50.));
-  c.child(std::make_unique<Container>());
-  c.pad(15.);
-  c.measure();
-  c.arrange();
+  auto ui = Container(
+    pad(15.f),
+    gap(10.f),
+    child(Container(
+     w(px(40.)),
+     h(px(30.))
+    )),
+    child(Container(
+     w(px(40.)),
+     h(px(30.))
+    ))
+  );
+
+  ui.measure();
+  ui.arrange();
 
   return 0;
 }

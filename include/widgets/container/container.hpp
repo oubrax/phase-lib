@@ -1,10 +1,5 @@
 #pragma once
-#include "widget.hpp"
-
-enum class ContainerAxis {
-  Row,
-  Column,
-};
+#include "prop.hpp"
 
 struct ContainerStyle {
   ContainerAxis axis;
@@ -28,6 +23,8 @@ private:
 
   bool width_fit() { return style.w.unit == Unit::Fit; }
   bool height_fit() { return style.h.unit == Unit::Fit; }
+
+  bool leaf_node() { return !children.size(); }
 
   void finalize_width();
   void finalize_height();
@@ -55,6 +52,20 @@ public:
   Container &h(ScreenUnit unit) {
     style.h = unit;
     return *this;
+  }
+
+  Container &axis(ContainerAxis a) {
+    style.axis = a;
+    return *this;
+  }
+  Container &gap(float g) {
+    style.gap = g;
+    return *this;
+  }
+
+  template <typename... Props>
+  Container(Props&&... props) : Container() {
+    (std::forward<Props>(props).apply(*this), ...);
   }
 
   Container &pad(float px) {
