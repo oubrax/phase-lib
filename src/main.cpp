@@ -6,8 +6,8 @@ int main() {
     pad(15.f),
     gap(10.f),
     child(Container(
-     w(px(40.)),
-     h(px(30.))
+     w(px(80.)),
+     h(px(50.))
     )),
     child(Container(
      w(px(40.)),

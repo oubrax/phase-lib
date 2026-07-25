@@ -5,12 +5,12 @@
 
 TEST_CASE("measure_pass container exact sizing") {
     Container c = Container(
+        pad(10.),
         w(px(50.)),
         h(px(50.))
     );
 
     c.measure();
-
     CHECK(c.layout.measured_w == 50.);
     CHECK(c.layout.measured_h == 50.);
 }
@@ -26,7 +26,6 @@ TEST_CASE("measure_pass container fit sizing") {
     );
 
     c.measure();
-
     CHECK(c.layout.measured_w == 17.);
     CHECK(c.layout.measured_h == 28.);
 }
@@ -133,4 +132,31 @@ TEST_CASE("nested percent sizing") {
     Container* c2 = dynamic_cast<Container *>(c.children[0].get());
     CHECK(c2->children[0]->layout.w == 50.);
     CHECK(c2->children[0]->layout.h == 50.);
+}
+
+TEST_CASE("align & cross alignment")  {
+    Container c = Container(
+        w(px(100.)),
+        h(px(100.)),
+        pad(10.),
+        gap(10.),
+        main_align(ContainerAlign::Center),
+        cross_align(ContainerAlign::Center),
+        child(Container(
+            w(px(10.)),
+            h(px(10.))
+        )),
+        child(Container(
+            w(px(10.)),
+            h(px(10.))
+        ))
+    );
+
+    c.measure();
+    c.arrange();
+
+    CHECK(c.children[0]->layout.x == 35.);
+    CHECK(c.children[1]->layout.x == 55.);
+    CHECK(c.children[0]->layout.y == 45.);
+    CHECK(c.children[1]->layout.y == 45.);
 }

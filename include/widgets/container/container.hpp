@@ -5,6 +5,8 @@
 
 struct ContainerStyle {
   ContainerAxis axis;
+  ContainerAlign main_align;
+  ContainerAlign cross_align;
 
   float pl, pr, pt, pb;
   ScreenUnit w, h;
@@ -26,18 +28,10 @@ private:
 
   void adjust_fit(Widget &child);
 
-  bool width_fit() { return style.w.unit == Unit::Fit; }
-  bool height_fit() { return style.h.unit == Unit::Fit; }
-  bool dependent_width() {
-    return style.w.unit != Unit::Exact && style.w.unit != Unit::Pct;
-  };
-  bool dependent_height() {
-    return style.h.unit != Unit::Exact && style.h.unit != Unit::Pct;
-  };
   // bool leaf_node() { return !children.size(); }
 
-  float base_width();
-  float base_height();
+  void init_measured_width();
+  void init_measured_height();
 
   void finalize_width();
   void finalize_height();
@@ -48,9 +42,7 @@ private:
     child.layout.y += style.pt;
   }
 
-  float initial_offset() {
-    return 0; // TODO: add alignment handling here
-  }
+  float initial_offset();
 
   float calc_offset(Widget &child);
   void record_growth(Widget &child);
@@ -58,15 +50,28 @@ private:
 
   void pct_check(Widget &child);
 
-  std::tuple<float, float> free_space();
+  void resolve_grow_pct();
 
+  void cross_offset(Widget &child);
+
+  std::tuple<float, float> free_space();
 
   void offset(float offset, Widget &child);
 
 public:
   Container();
+  Container &main_align(ContainerAlign align) {
+    style.main_align = align;
+    return *this;
+  };
+  Container &cross_align(ContainerAlign align) {
+    style.cross_align = align;
+    return *this;
+  };
 
   Container &w(ScreenUnit unit) {
+    layout.x_growth = false;
+    layout.x_pct = 0;
     if (unit.unit == Unit::Grow) {
       layout.x_growth = true;
     } else if (unit.unit == Unit::Pct) {
@@ -76,6 +81,8 @@ public:
     return *this;
   }
   Container &h(ScreenUnit unit) {
+    layout.y_growth = false;
+    layout.y_pct = 0;
     if (unit.unit == Unit::Grow) {
       layout.y_growth = true;
     } else if (unit.unit == Unit::Pct) {
