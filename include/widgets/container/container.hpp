@@ -63,17 +63,16 @@ public:
     return *this;
   }
 
-  template <typename... Props>
-  Container(Props&&... props) : Container() {
+  template <typename... Props> Container(Props &&...props) : Container() {
     (std::forward<Props>(props).apply(*this), ...);
   }
 
   Container &pad(float px) {
-      style.pb = px;
-      style.pt = px;
-      style.pl = px;
-      style.pr = px;
-      return *this;
+    style.pb = px;
+    style.pt = px;
+    style.pl = px;
+    style.pr = px;
+    return *this;
   }
 
   Container &child(std::unique_ptr<Widget> w) {

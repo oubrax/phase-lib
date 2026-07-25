@@ -11,34 +11,33 @@ enum class ContainerAxis {
 
 struct PadProp {
   float value;
-  void apply(Container& c);
+  void apply(Container &c);
 };
 
 struct WidthProp {
   ScreenUnit value;
-  void apply(Container& c);
+  void apply(Container &c);
 };
 
 struct HeightProp {
   ScreenUnit value;
-  void apply(Container& c);
+  void apply(Container &c);
 };
 
 struct AxisProp {
   ContainerAxis value;
-  void apply(Container& c);
+  void apply(Container &c);
 };
 
 struct GapProp {
   float value;
-  void apply(Container& c);
+  void apply(Container &c);
 };
 
 struct ChildProp {
   std::unique_ptr<Widget> value;
-  void apply(Container& c);
+  void apply(Container &c);
 };
-
 
 inline PadProp pad(float v) { return {v}; }
 inline WidthProp w(ScreenUnit v) { return {v}; }
@@ -47,6 +46,7 @@ inline AxisProp axis(ContainerAxis v) { return {v}; }
 inline GapProp gap(float v) { return {v}; }
 
 template <typename T>
-ChildProp child(T&& w) {
+  requires std::derived_from<T, Widget>
+ChildProp child(T &&w) {
   return {std::make_unique<T>(std::forward<T>(w))};
 }
