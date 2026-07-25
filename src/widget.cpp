@@ -5,3 +5,6 @@ ScreenUnit px(float px) {
 }
 
 ScreenUnit grow() { return ScreenUnit{.unit = Unit::Grow, .value = {.px = 0}}; }
+ScreenUnit pct(float pct) {
+    return ScreenUnit {.unit = Unit::Pct, .value {.pct = pct / 100}};
+}

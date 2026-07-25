@@ -94,3 +94,43 @@ TEST_CASE("nested grow") {
 
     CHECK(c2->children[0]->layout.w == 100.);
 }
+
+TEST_CASE("percent sizing") {
+    Container c = Container(
+        w(px(100.)),
+        h(px(100.)),
+        child(Container(
+            w(pct(50)),
+            h(pct(50))
+        ))
+    );
+    c.measure();
+    c.arrange();
+
+    CHECK(c.children[0]->layout.w == 50.);
+    CHECK(c.children[0]->layout.h == 50.);
+}
+
+TEST_CASE("nested percent sizing") {
+    Container c = Container(
+        w(px(200.)),
+        h(px(200.)),
+        child(Container(
+            w(pct(50)),
+            h(pct(50)),
+            child(Container(
+                w(pct(50)),
+                h(pct(50))
+            ))
+        ))
+    );
+    c.measure();
+    c.arrange();
+
+    CHECK(c.children[0]->layout.w == 100.);
+    CHECK(c.children[0]->layout.h == 100.);
+
+    Container* c2 = dynamic_cast<Container *>(c.children[0].get());
+    CHECK(c2->children[0]->layout.w == 50.);
+    CHECK(c2->children[0]->layout.h == 50.);
+}

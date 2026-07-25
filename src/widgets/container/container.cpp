@@ -25,11 +25,13 @@ float Container::height_additions() {
 }
 
 void Container::adjust_fit(Widget &child) {
-  if (along_axis(ContainerAxis::Row)) {
+  if (along_axis(ContainerAxis::Row) && dependent_width()) {
     layout.measured_w += child.layout.measured_w;
     layout.measured_h = std::max(child.layout.measured_h + height_additions(),
                                  layout.measured_h);
-  } else {
+  }
+
+  if (along_axis(ContainerAxis::Column) && dependent_height()) {
     layout.measured_h += child.layout.measured_h;
     layout.measured_w = std::max(child.layout.measured_w + width_additions(),
                                  layout.measured_w);
@@ -38,7 +40,8 @@ void Container::adjust_fit(Widget &child) {
 
 void Container::finalize_width() {
   switch (style.w.unit) {
-  case Unit::Fit: {
+  case Unit::Fit:
+  case Unit::Pct: {
     layout.w = layout.measured_w;
     break;
   };
@@ -55,7 +58,8 @@ void Container::finalize_width() {
 
 void Container::finalize_height() {
   switch (style.h.unit) {
-  case Unit::Fit: {
+  case Unit::Fit:
+  case Unit::Pct: {
     layout.h = layout.measured_h;
     break;
   };
@@ -100,26 +104,35 @@ void Container::record_growth(Widget &child) {
   }
 }
 
+void Container::pct_check(Widget &child) {
+  if (!dependent_width()) {
+    if (child.layout.x_pct) {
+      child.layout.measured_w = child.layout.x_pct * layout.measured_w;
+    }
+  }
+  if (!dependent_height()) {
+    if (child.layout.y_pct) {
+      child.layout.measured_h = child.layout.y_pct * layout.measured_h;
+    }
+  }
+}
+
 void Container::draw(RendererCtx &ctx) {
   ctx.push_rect(
       Rect{.x = layout.x, .y = layout.y, .w = layout.w, .h = layout.h});
 }
 
 void Container::measure() {
-  layout.measured_w = width_additions();
-  layout.measured_h = height_additions();
+  layout.measured_w = base_width();
+  layout.measured_h = base_height();
 
   for (auto &c : children) {
     Widget &child = *c;
+    pct_check(child);
     child.measure();
 
     adjust_fit(child);
     record_growth(child);
-  }
-
-  if (leaf_node()) {
-    layout.measured_w += style.w.value.px;
-    layout.measured_h += style.h.value.px;
   }
 }
 
@@ -141,18 +154,56 @@ void Container::grow(float free_width, float free_height, Widget &child) {
   }
 }
 
-std::tuple<float, float> Container::free_space() {
-    float free_width = layout.w - width_additions();
-    float free_height = layout.h - height_additions();
-    for (auto &c : children) {
-      if (along_axis(ContainerAxis::Row)) {
-        free_width -= c->layout.w;
-      } else {
-        free_width -= c->layout.h;
-      }
+float Container::base_width() {
+  switch (style.w.unit) {
+  case Unit::Fit:
+  case Unit::Grow: {
+    return width_additions();
+  };
+  case Unit::Exact: {
+    return style.w.value.px + width_additions();
+  };
+  case Unit::Pct: {
+    if (layout.measured_w) {
+      return layout.measured_w;
     }
+    return width_additions();
+  }
+  };
+  return width_additions();
+}
 
-    return {free_width, free_height};
+float Container::base_height() {
+  switch (style.h.unit) {
+  case Unit::Fit:
+  case Unit::Grow: {
+    return height_additions();
+  };
+  case Unit::Exact: {
+    return style.h.value.px + height_additions();
+  };
+  case Unit::Pct: {
+    if (layout.measured_h) {
+      return layout.measured_h;
+    }
+    return height_additions();
+  }
+  };
+  return height_additions();
+}
+
+std::tuple<float, float> Container::free_space() {
+  float free_width = layout.w - width_additions();
+  float free_height = layout.h - height_additions();
+  for (auto &c : children) {
+    if (along_axis(ContainerAxis::Row)) {
+      free_width -= c->layout.w;
+    } else {
+      free_width -= c->layout.h;
+    }
+  }
+
+  return {free_width, free_height};
 }
 
 void Container::arrange() {

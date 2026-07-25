@@ -10,6 +10,7 @@ enum class CmdTag {
 enum class Unit {
   Fit,
   Grow,
+  Pct,
 
   Exact,
 };
@@ -18,6 +19,7 @@ struct ScreenUnit {
   Unit unit;
   union ScreenUnion {
     float px;
+    float pct;
   } value;
 };
 
@@ -61,6 +63,8 @@ struct Layout {
   float growth_w = 0;
   float growth_h = 0;
 
+  float x_pct = 0;
+  float y_pct = 0;
 
   bool x_growth;
   bool y_growth;
@@ -77,6 +81,8 @@ public:
       .measured_h = 0,
       .growth_w = 0,
       .growth_h = 0,
+      .x_pct = 0,
+      .y_pct = 0,
       .x_growth = false,
       .y_growth = false,
   };
@@ -99,4 +105,5 @@ public:
 };
 
 ScreenUnit px(float px);
+ScreenUnit pct(float pct);
 ScreenUnit grow();

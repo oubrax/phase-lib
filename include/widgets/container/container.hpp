@@ -28,8 +28,16 @@ private:
 
   bool width_fit() { return style.w.unit == Unit::Fit; }
   bool height_fit() { return style.h.unit == Unit::Fit; }
+  bool dependent_width() {
+    return style.w.unit != Unit::Exact && style.w.unit != Unit::Pct;
+  };
+  bool dependent_height() {
+    return style.h.unit != Unit::Exact && style.h.unit != Unit::Pct;
+  };
+  // bool leaf_node() { return !children.size(); }
 
-  bool leaf_node() { return !children.size(); }
+  float base_width();
+  float base_height();
 
   void finalize_width();
   void finalize_height();
@@ -47,7 +55,11 @@ private:
   float calc_offset(Widget &child);
   void record_growth(Widget &child);
   void grow(float free_width, float free_height, Widget &child);
+
+  void pct_check(Widget &child);
+
   std::tuple<float, float> free_space();
+
 
   void offset(float offset, Widget &child);
 
@@ -57,6 +69,8 @@ public:
   Container &w(ScreenUnit unit) {
     if (unit.unit == Unit::Grow) {
       layout.x_growth = true;
+    } else if (unit.unit == Unit::Pct) {
+      layout.x_pct = unit.value.pct;
     }
     style.w = unit;
     return *this;
@@ -64,6 +78,8 @@ public:
   Container &h(ScreenUnit unit) {
     if (unit.unit == Unit::Grow) {
       layout.y_growth = true;
+    } else if (unit.unit == Unit::Pct) {
+      layout.y_pct = unit.value.pct;
     }
     style.h = unit;
     return *this;
