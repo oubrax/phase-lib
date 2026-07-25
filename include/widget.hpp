@@ -22,7 +22,7 @@ struct ScreenUnit {
 };
 
 struct Rect {
-  ScreenUnit x, y, w, h;
+  float x, y, w, h;
 };
 
 struct DrawCmd {
@@ -57,6 +57,13 @@ struct Layout {
 
   float measured_w = 0;
   float measured_h = 0;
+
+  float growth_w = 0;
+  float growth_h = 0;
+
+
+  bool x_growth;
+  bool y_growth;
 };
 
 class Widget {
@@ -68,6 +75,10 @@ public:
       .h = 0,
       .measured_w = 0,
       .measured_h = 0,
+      .growth_w = 0,
+      .growth_h = 0,
+      .x_growth = false,
+      .y_growth = false,
   };
 
   // Measure layout pass: calculate the widget's (and optionally the children's)
@@ -82,9 +93,10 @@ public:
   virtual ~Widget() = default;
 };
 
-class PapaWidget : public Widget {
+class ParentWidget : public Widget {
 public:
   std::vector<std::unique_ptr<Widget>> children;
 };
 
 ScreenUnit px(float px);
+ScreenUnit grow();

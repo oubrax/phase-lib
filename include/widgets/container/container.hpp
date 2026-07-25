@@ -1,5 +1,7 @@
 #pragma once
 #include "prop.hpp"
+#include "widget.hpp"
+#include <tuple>
 
 struct ContainerStyle {
   ContainerAxis axis;
@@ -10,9 +12,12 @@ struct ContainerStyle {
   float gap;
 };
 
-class Container : public PapaWidget {
+class Container : public ParentWidget {
 private:
   ContainerStyle style;
+
+  unsigned int x_growers = 0;
+  unsigned int y_growers = 0;
 
   bool along_axis(ContainerAxis axis) { return style.axis == axis; }
 
@@ -40,16 +45,26 @@ private:
   }
 
   float calc_offset(Widget &child);
+  void record_growth(Widget &child);
+  void grow(float free_width, float free_height, Widget &child);
+  std::tuple<float, float> free_space();
+
   void offset(float offset, Widget &child);
 
 public:
   Container();
 
   Container &w(ScreenUnit unit) {
+    if (unit.unit == Unit::Grow) {
+      layout.x_growth = true;
+    }
     style.w = unit;
     return *this;
   }
   Container &h(ScreenUnit unit) {
+    if (unit.unit == Unit::Grow) {
+      layout.y_growth = true;
+    }
     style.h = unit;
     return *this;
   }

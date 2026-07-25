@@ -1,3 +1,4 @@
+#include "widgets/container/prop.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"
 #include "widgets/container/container.hpp"
@@ -50,4 +51,46 @@ TEST_CASE("arrange_pass padded") {
 
     CHECK(c.children[0]->layout.w == 20.);
     CHECK(c.children[0]->layout.h == 20.);
+}
+
+TEST_CASE("nested fit") {
+
+    Container c = Container(
+        child(Container(
+            Container(
+                Container(
+                    w(px(50.)),
+                    h(px(50.))
+                )
+            )
+        ))
+    );
+
+    c.measure();
+    c.arrange();
+
+    CHECK(c.layout.w == 50.);
+    CHECK(c.layout.h == 50.);
+}
+
+TEST_CASE("nested grow") {
+    Container c = Container(
+        w(px(100.)),
+        h(px(100.)),
+        child(
+            Container(
+                w(grow()),
+                child(
+                    Container(w(grow()))
+                )
+            )
+        )
+    );
+    c.measure();
+    c.arrange();
+    CHECK(c.children[0]->layout.w == 100.);
+
+    Container *c2 = dynamic_cast<Container* >(c.children[0].get());
+
+    CHECK(c2->children[0]->layout.w == 100.);
 }
