@@ -10,10 +10,14 @@ phase
 
 # clangd
 .cache/
+compile_commands.json
 
 # IDE
-.idea/
 .vscode/
 *.swp
 *.swo
 *~
+vcpkg_installed/
+cmake-build-debug/
+cmake-build-release/
+.idea/

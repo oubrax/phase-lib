@@ -6,18 +6,25 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-  add_compile_options(-Wall -Wextra -O0 -g)
-endif()
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    add_compile_options(-Wall -Wextra -O0 -g)
+endif ()
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glad REQUIRED)
 
 add_library(phase_lib STATIC
-  src/widget.cpp
-  src/widgets/container/container.cpp
-  src/widgets/container/prop.cpp
+        src/widget.cpp
+        src/widgets/container/container.cpp
+        src/widgets/container/prop.cpp
+        include/widget.hpp
+        include/widgets/container/container.hpp
+        include/widgets/container/prop.hpp
+        include/surface/drawing_surface.hpp
+        include/surface/gl_glfw_surface.hpp
+        include/application/application.hpp
+        include/renderer/gl.hpp
 )
 
 target_include_directories(phase_lib PUBLIC include)
@@ -27,14 +34,14 @@ add_executable(phase src/main.cpp)
 target_link_libraries(phase PRIVATE phase_lib)
 
 option(BUILD_TESTS "Build tests" ON)
-if(BUILD_TESTS)
-  enable_testing()
-  include(FetchContent)
-  FetchContent_Declare(
-    doctest
-    GIT_REPOSITORY https://github.com/doctest/doctest.git
-    GIT_TAG v2.5.3
-  )
-  FetchContent_MakeAvailable(doctest)
-  add_subdirectory(test)
-endif()
+if (BUILD_TESTS)
+    enable_testing()
+    include(FetchContent)
+    FetchContent_Declare(
+            doctest
+            GIT_REPOSITORY https://github.com/doctest/doctest.git
+            GIT_TAG v2.5.3
+    )
+    FetchContent_MakeAvailable(doctest)
+    add_subdirectory(test)
+endif ()
