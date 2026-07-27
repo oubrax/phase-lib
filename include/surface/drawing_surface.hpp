@@ -3,17 +3,17 @@
 
 #include <string_view>
 
-// This abstract class defines the window-agnostic surface API, only handles creation and data/event
-// functionality, while letting the actual windows handles stored in the application / renderer.
+// This abstract class represents a Window
 class DrawingSurface {
 public:
     virtual void init() = 0;
-    virtual void destroy(WindowHandle handle) = 0;
-    virtual void swap_buffers(WindowHandle handle) = 0;
-    virtual void poll_events(WindowHandle handle) = 0;
-    virtual bool should_close(WindowHandle handle) = 0;
+    virtual void destroy() = 0;
+    virtual void swap_buffers() = 0;
+    virtual void poll_events() = 0;
+    virtual bool should_close() = 0;
+    virtual void make_current() = 0;
 
-    virtual WindowHandle create_surface(const WindowOptions& options) = 0;
+    virtual void create_surface(const WindowOptions& options) = 0;
 
     virtual ~DrawingSurface() = default;
 };

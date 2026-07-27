@@ -2,22 +2,36 @@
 #include "surface/drawing_surface.hpp"
 #include "widget.hpp"
 
-template<typename R>
+#include <algorithm>
+
+template <typename R>
 class Application {
 
-    Renderer<R> renderer;
+    R renderer;
 public:
-    explicit Application(Renderer<R> renderer): renderer(renderer) {
+    explicit Application(R renderer): renderer(std::move(renderer)) {}
 
+
+
+    WindowId spawn_window(WindowOptions options) {
+       return renderer.create_surface(options);
     }
 
-
-
-    WindowHandle spawn_window(const WindowOptions& options) {
-        return renderer.get_surface().create_surface(options);
+    static void render(WindowId id) {
+        // in future would add the widget data per window
     }
 
-    void render(WindowHandle window) {
-        
+    void run() {
+        const auto& surfaces = renderer.get_surfaces();
+
+        // check main window for now
+        while (!surfaces[0]->should_close()) {
+            unsigned int id = 0;
+            for (const auto &surface : surfaces) {
+                renderer.process(WindowId(id), {});
+                id++;
+            }
+        };
+
     }
 };

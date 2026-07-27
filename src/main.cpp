@@ -5,10 +5,13 @@
 #include "widgets/container/prop.hpp"
 
 int main() {
-    auto surface = GlfwOpenGlSurface();
-    const auto renderer = OpenGLRenderer(surface);
-    auto app = Application(renderer);
+    auto app = Application(OpenGLRenderer());
 
+    auto window = app.spawn_window(WindowOptions().title("Main Window"));
+
+    app.render(window);
+
+    app.run();
 
     return 0;
 }

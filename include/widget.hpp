@@ -38,10 +38,15 @@ struct DrawCmd {
 
 template <typename R> class Renderer {
 public:
-    void process(std::span<const DrawCmd> cmds) { static_cast<R*>(this)->process(cmds); }
-    void init() { static_cast<R*>(this)->init(); }
+    void process(WindowId id, std::span<const DrawCmd> cmds) { static_cast<R*>(this)->process(id, cmds); }
 
-    DrawingSurface &get_surface() { return static_cast<R*>(this)->surface(); }
+    WindowId create_surface(WindowOptions &options) {
+        return static_cast<R*>(this)->create_surface(options);
+    }
+
+    const std::vector<std::unique_ptr<DrawingSurface>>& get_surfaces() {
+        return static_cast<R*>(this)->get_surfaces();
+    }
 };
 
 class RendererCtx {

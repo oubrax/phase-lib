@@ -17,7 +17,7 @@ public:
 
     WindowType window_type = WindowType::Default;
 
-    WindowOptions();
+    WindowOptions() = default;
 
     WindowOptions &width(int width) {
         window_width = width;
@@ -43,18 +43,19 @@ public:
         window_type = type;
         return *this;
     }
-    
+
+
+    WindowOptions &title(std::string_view title) {
+        window_name = title;
+        return *this;
+    }
 
 
     ~WindowOptions() = default;
 };
 
-class WindowHandle {
-public:
-    void* window_handle = nullptr;
-    explicit WindowHandle(void * handle ) : window_handle(handle) {};
+struct WindowId {
+    unsigned int id;
 
-    [[nodiscard]] void* get() const {
-        return window_handle;
-    }
+    explicit WindowId(unsigned int id_): id(id_) {};
 };
