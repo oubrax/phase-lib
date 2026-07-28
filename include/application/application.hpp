@@ -17,7 +17,7 @@ public:
        return renderer.create_surface(options);
     }
 
-    static void render(WindowId id) {
+    static void render(WindowId id, ) {
         // in future would add the widget data per window
     }
 
