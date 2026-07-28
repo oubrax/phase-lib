@@ -13,10 +13,7 @@ public:
     explicit OpenGLRenderer() = default;
 
     WindowId create_surface(const WindowOptions& options) {
-        auto surface = std::make_unique<GlfwOpenGlSurface>();
-        surface->init();
-        surface->create_surface(options);
-
+        auto surface = std::make_unique<GlfwOpenGlSurface>(options);
         const auto id = surfaces.size();
 
         // push to surfaces
@@ -45,10 +42,10 @@ public:
         surface->swap_buffers();
     }
 
-
-
-
     OpenGLRenderer(OpenGLRenderer&&) = default;
     OpenGLRenderer& operator=(OpenGLRenderer&&) = default;
-    ~OpenGLRenderer() = default;
+
+    ~OpenGLRenderer() {
+        GlfwOpenGlSurface::global_cleanup();
+    }
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "application/window.hpp"
 #include "surface/drawing_surface.hpp"
 
 #include <memory>
@@ -38,7 +39,9 @@ struct DrawCmd {
 
 template <typename R> class Renderer {
 public:
-    void process(WindowId id, std::span<const DrawCmd> cmds) { static_cast<R*>(this)->process(id, cmds); }
+    void process(WindowId id, std::span<const DrawCmd> cmds) {
+        static_cast<R*>(this)->process(id, cmds);
+    }
 
     WindowId create_surface(WindowOptions &options) {
         return static_cast<R*>(this)->create_surface(options);

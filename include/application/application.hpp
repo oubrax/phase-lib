@@ -6,18 +6,15 @@
 
 template <typename R>
 class Application {
-
     R renderer;
 public:
     explicit Application(R renderer): renderer(std::move(renderer)) {}
-
-
 
     WindowId spawn_window(WindowOptions options) {
        return renderer.create_surface(options);
     }
 
-    static void render(WindowId id, ) {
+    static void render(WindowId id) {
         // in future would add the widget data per window
     }
 

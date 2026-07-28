@@ -8,22 +8,11 @@
 #include <string>
 #include <string_view>
 
+
 class GlfwOpenGlSurface final : public DrawingSurface {
-
 public:
-    void init() override { glfwInit(); }
-
-    void destroy() override {
-        assert(m_window_handle);
-        glfwDestroyWindow(m_window_handle);
-    }
-
-    void make_current() override {
-        assert(m_window_handle);
-        glfwMakeContextCurrent(m_window_handle);
-    }
-
-    void create_surface(const WindowOptions& options) override {
+    explicit GlfwOpenGlSurface(const WindowOptions& options) {
+        glfwInit();
         assert (!m_window_handle);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -43,7 +32,8 @@ public:
             m_window_handle = glfwCreateWindow(options.window_width, options.window_height,
                                               title.c_str(), nullptr, nullptr);
             break;
-        };
+        }
+
         case WindowType::Fullscreen: {
 
             GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
@@ -65,6 +55,16 @@ public:
         gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     }
 
+    void destroy() override {
+        assert(m_window_handle);
+        glfwDestroyWindow(m_window_handle);
+    }
+
+    void make_current() override {
+        assert(m_window_handle);
+        glfwMakeContextCurrent(m_window_handle);
+    }
+
     void swap_buffers() override {
         assert(m_window_handle);
         glfwSwapBuffers(m_window_handle);
@@ -80,9 +80,9 @@ public:
         return glfwWindowShouldClose(m_window_handle);
     }
 
-    ~GlfwOpenGlSurface() override {
+    static void global_cleanup() {
         glfwTerminate();
-    };
+    }
 
 private:
     GLFWwindow *m_window_handle = nullptr;
