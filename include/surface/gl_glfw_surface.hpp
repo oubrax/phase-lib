@@ -58,6 +58,7 @@ public:
     void destroy() override {
         assert(m_window_handle);
         glfwDestroyWindow(m_window_handle);
+        m_window_handle = nullptr;
     }
 
     void make_current() override {

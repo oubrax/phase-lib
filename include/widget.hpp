@@ -1,10 +1,12 @@
 #pragma once
-#include "application/window.hpp"
-#include "surface/drawing_surface.hpp"
-
+#include <functional>
 #include <memory>
 #include <span>
 #include <vector>
+
+#include "application/window.hpp"
+#include "surface/drawing_surface.hpp"
+
 
 enum class CmdTag {
     Rect,
@@ -47,8 +49,16 @@ public:
         return static_cast<R*>(this)->create_surface(options);
     }
 
-    const std::vector<std::unique_ptr<DrawingSurface>>& get_surfaces() {
-        return static_cast<R*>(this)->get_surfaces();
+    void foreach_surface(std::function<void (WindowId id, DrawingSurface*)> fn) {
+        static_cast<R*>(this)->foreach_surface(std::move(fn));
+    }
+
+    void destroy_surface(WindowId id) {
+        static_cast<R*>(this)->destroy_surface(id);
+    }
+
+    void destroy_all_surfaces() {
+        static_cast<R*>(this)->destroy_all_surfaces();
     }
 };
 
