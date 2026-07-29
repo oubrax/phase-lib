@@ -54,8 +54,19 @@ public:
     ~WindowOptions() = default;
 };
 
+
 struct WindowId {
     unsigned int id;
 
-    explicit WindowId(unsigned int id_): id(id_) {};
+    explicit WindowId(const unsigned int id_): id(id_) {}
+
+    struct hash {
+        std::size_t operator()(const WindowId &inst) const noexcept {
+            return std::hash<decltype(inst.id)>()(inst.id);
+        }
+    };
+
+    bool operator==(const WindowId& other) const {
+        return other.id == id;
+    }
 };
