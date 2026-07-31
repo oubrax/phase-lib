@@ -7,7 +7,7 @@ enum class WindowType {
     Borderless,
 };
 
-class WindowOptions {
+class SurfaceOptions {
 public:
     std::string_view window_name = "phase";
     int window_width = 1024;
@@ -17,56 +17,51 @@ public:
 
     WindowType window_type = WindowType::Default;
 
-    WindowOptions() = default;
+    SurfaceOptions() = default;
 
-    WindowOptions &width(int width) {
+    SurfaceOptions& width(int width) {
         window_width = width;
         return *this;
     }
 
-    WindowOptions &height(int height) {
+    SurfaceOptions& height(int height) {
         window_height = height;
         return *this;
     }
 
-    WindowOptions &x(int x) {
+    SurfaceOptions& x(int x) {
         window_x = x;
         return *this;
     }
 
-    WindowOptions &y(int y) {
+    SurfaceOptions& y(int y) {
         window_y = y;
         return *this;
     }
 
-    WindowOptions &type(WindowType type) {
+    SurfaceOptions& type(WindowType type) {
         window_type = type;
         return *this;
     }
 
-
-    WindowOptions &title(std::string_view title) {
+    SurfaceOptions& title(std::string_view title) {
         window_name = title;
         return *this;
     }
 
-
-    ~WindowOptions() = default;
+    ~SurfaceOptions() = default;
 };
 
-
-struct WindowId {
+struct SurfaceId {
     unsigned int id;
 
-    explicit WindowId(const unsigned int id_): id(id_) {}
+    explicit SurfaceId(const unsigned int id_) : id(id_) {}
 
     struct hash {
-        std::size_t operator()(const WindowId &inst) const noexcept {
+        std::size_t operator()(const SurfaceId& inst) const noexcept {
             return std::hash<decltype(inst.id)>()(inst.id);
         }
     };
 
-    bool operator==(const WindowId& other) const {
-        return other.id == id;
-    }
+    bool operator==(const SurfaceId& other) const { return other.id == id; }
 };

@@ -4,33 +4,36 @@
 #include "application/window.hpp"
 #include "drawing_surface.hpp"
 
+#include <GLFW/glfw3.h>
 #include <cassert>
 #include <string>
 #include <string_view>
 
-
 class GlfwOpenGlSurface final : public DrawingSurface {
 public:
-    explicit GlfwOpenGlSurface(const WindowOptions& options) {
+    explicit GlfwOpenGlSurface(const SurfaceOptions& options) {
         glfwInit();
-        assert (!m_window_handle);
+        assert(!m_window_handle);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
         const std::string title(options.window_name);
+
+
+        width = options.window_width;
+        height = options.window_height;
 
         switch (options.window_type) {
         case WindowType::Default: {
             m_window_handle = glfwCreateWindow(options.window_width, options.window_height,
-                                              title.c_str(), nullptr, nullptr);
+                                               title.c_str(), nullptr, nullptr);
             break;
         }
 
         case WindowType::Borderless: {
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
             m_window_handle = glfwCreateWindow(options.window_width, options.window_height,
-                                              title.c_str(), nullptr, nullptr);
+                                               title.c_str(), nullptr, nullptr);
             break;
         }
 
@@ -45,11 +48,23 @@ public:
 
             const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
 
-            m_window_handle = glfwCreateWindow(mode->width, mode->height, title.c_str(),
-                                              nullptr, nullptr);
+            m_window_handle =
+                glfwCreateWindow(mode->width, mode->height, title.c_str(), nullptr, nullptr);
+
+            width = mode->width; height = mode->height;
             break;
         }
         }
+        glfwSetWindowUserPointer(m_window_handle, this);
+        glfwSetFramebufferSizeCallback(m_window_handle, [](GLFWwindow* handle, int width, int height) {
+            GlfwOpenGlSurface *surface = static_cast<GlfwOpenGlSurface*>(glfwGetWindowUserPointer(handle));
+
+            surface->width = width;
+            surface->height = height;
+
+            glfwMakeContextCurrent(handle);
+            glViewport(0, 0, width, height);
+        });
 
         glfwMakeContextCurrent(m_window_handle);
         gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -81,10 +96,8 @@ public:
         return glfwWindowShouldClose(m_window_handle);
     }
 
-    static void global_cleanup() {
-        glfwTerminate();
-    }
+    static void global_cleanup() { glfwTerminate(); }
 
 private:
-    GLFWwindow *m_window_handle = nullptr;
+    GLFWwindow* m_window_handle = nullptr;
 };

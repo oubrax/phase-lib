@@ -14,6 +14,11 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glad REQUIRED)
 
+set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/renderer/shaders)
+file(READ ${SHADERS_DIR}/vertex.glsl VERTEX_SHADER)
+file(READ ${SHADERS_DIR}/frag.glsl FRAGMENT_SHADER)
+configure_file(${SHADERS_DIR}/shaders.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/shaders.hpp @ONLY)
+
 add_library(phase_lib STATIC
         src/widget.cpp
         src/widgets/container/container.cpp
@@ -27,7 +32,7 @@ add_library(phase_lib STATIC
         include/renderer/gl.hpp
 )
 
-target_include_directories(phase_lib PUBLIC include)
+target_include_directories(phase_lib PUBLIC include ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(phase_lib PUBLIC OpenGL::GL glfw glad::glad)
 
 add_executable(phase src/main.cpp)

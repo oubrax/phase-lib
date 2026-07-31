@@ -26,3 +26,6 @@ void MainAlignProp::apply(Container& c) {
 void CrossAlignProp::apply(Container& c) {
     c.cross_align(value);
 }
+void ColorProp::apply(Container& c) {
+    c.color(r, g, b, a);
+}

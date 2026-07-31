@@ -13,6 +13,8 @@ struct ContainerStyle {
     ScreenUnit w, h;
 
     float gap;
+
+    float r = 0, g = 0, b = 0, a = 0;
 };
 
 class Container : public ParentWidget {
@@ -102,7 +104,17 @@ public:
         return *this;
     }
 
-    template <typename... Props> Container(Props&&... props) : Container() {
+    Container& color(float r, float g, float b, float a = 1.f) {
+        style.r = r;
+        style.g = g;
+        style.b = b;
+        style.a = a;
+        return *this;
+    }
+
+    template <typename... Props>
+        requires (requires(Props& p, Container& c) { p.apply(c); } && ...)
+    Container(Props&&... props) : Container() {
         (std::forward<Props>(props).apply(*this), ...);
     }
 

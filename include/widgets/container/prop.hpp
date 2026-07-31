@@ -56,6 +56,11 @@ struct CrossAlignProp {
     void apply(Container& c);
 };
 
+struct ColorProp {
+    float r, g, b, a;
+    void apply(Container& c);
+};
+
 inline PadProp pad(float v) {
     return {v};
 }
@@ -77,9 +82,13 @@ inline MainAlignProp main_align(ContainerAlign align) {
 inline CrossAlignProp cross_align(ContainerAlign align) {
     return {align};
 }
+inline ColorProp color(float r, float g, float b, float a = 1.f) {
+    return {r, g, b, a};
+}
+
 
 template <typename T>
-    requires std::derived_from<T, Widget>
-ChildProp child(T&& w) {
-    return {std::make_unique<T>(std::forward<T>(w))};
-}
+     requires std::derived_from<std::remove_cvref_t<T>, Widget>
+ ChildProp child(T&& w) {
+     return {std::make_unique<std::remove_cvref_t<T>>(std::forward<T>(w))};
+ }

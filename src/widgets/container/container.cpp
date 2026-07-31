@@ -189,7 +189,20 @@ void Container::cross_offset(Widget& child) {
 }
 
 void Container::draw(RendererCtx& ctx) {
-    ctx.push_rect(Rect{.x = layout.x, .y = layout.y, .w = layout.w, .h = layout.h});
+    ctx.push_rect(Rect{
+        .x = layout.x,
+        .y = layout.y,
+        .w = layout.w,
+        .h = layout.h,
+        .r = style.r,
+        .g = style.g,
+        .b = style.b,
+        .a = style.a,
+    });
+
+    for (auto& c : children) {
+        c->draw(ctx);
+    }
 }
 
 void Container::init_measured_width() {
@@ -309,9 +322,11 @@ std::tuple<float, float> Container::free_space() {
     float free_height = layout.h - height_additions();
     for (auto& c : children) {
         if (along_axis(ContainerAxis::Row)) {
-            free_width -= c->layout.measured_w;
+            if (!c->layout.x_growth)
+                free_width -= c->layout.measured_w;
         } else {
-            free_height -= c->layout.measured_h;
+            if (!c->layout.y_growth)
+                free_height -= c->layout.measured_h;
         }
     }
 

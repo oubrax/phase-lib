@@ -1,12 +1,11 @@
 #pragma once
+#include "application/window.hpp"
+#include "surface/drawing_surface.hpp"
+
 #include <functional>
 #include <memory>
 #include <span>
 #include <vector>
-
-#include "application/window.hpp"
-#include "surface/drawing_surface.hpp"
-
 
 enum class CmdTag {
     Rect,
@@ -30,6 +29,7 @@ struct ScreenUnit {
 
 struct Rect {
     float x, y, w, h;
+    float r = 0, g = 0, b = 0, a = 0;
 };
 
 struct DrawCmd {
@@ -41,31 +41,27 @@ struct DrawCmd {
 
 template <typename R> class Renderer {
 public:
-    void process(WindowId id, std::span<const DrawCmd> cmds) {
+    void process(SurfaceId id, std::span<const DrawCmd> cmds) {
         static_cast<R*>(this)->process(id, cmds);
     }
 
-    WindowId create_surface(WindowOptions &options) {
+    SurfaceId create_surface(SurfaceOptions& options) {
         return static_cast<R*>(this)->create_surface(options);
     }
 
-    void foreach_surface(std::function<void (WindowId id, DrawingSurface*)> fn) {
+    void foreach_surface(std::function<void(SurfaceId id, DrawingSurface*)> fn) {
         static_cast<R*>(this)->foreach_surface(std::move(fn));
     }
 
-    void destroy_surface(WindowId id) {
-        static_cast<R*>(this)->destroy_surface(id);
-    }
+    void destroy_surface(SurfaceId id) { static_cast<R*>(this)->destroy_surface(id); }
 
-    void destroy_all_surfaces() {
-        static_cast<R*>(this)->destroy_all_surfaces();
-    }
+    void destroy_all_surfaces() { static_cast<R*>(this)->destroy_all_surfaces(); }
 };
 
 class RendererCtx {
-    std::vector<DrawCmd> draw_cmds;
 
 public:
+    std::vector<DrawCmd> draw_cmds;
     void push_rect(Rect rect) {
         draw_cmds.push_back({
             .tag = CmdTag::Rect,
