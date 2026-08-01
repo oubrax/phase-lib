@@ -1,0 +1,6 @@
+#pragma once
+
+#include <string_view>
+
+inline constexpr std::string_view VERTEX_SHADER = R"GLSL(@VERTEX_SHADER@)GLSL";
+inline constexpr std::string_view FRAGMENT_SHADER = R"GLSL(@FRAGMENT_SHADER@)GLSL";
